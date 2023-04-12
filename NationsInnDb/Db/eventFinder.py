@@ -1,35 +1,40 @@
 import pandas as pd
 from bs4 import BeautifulSoup
+import time
+from selenium.webdriver.common.by import By
 
 
-def eventFinder(fb_page, browser):
+DAYS_AHEAD = 3
 
-    browser.get(fb_page)
 
-    soup = BeautifulSoup(browser.page_source, "lxml")
+def eventFinder(browser):
+    
+    all_links = [] 
+    browser.get('https://nationsguiden.se')
+  
+    for i in range(DAYS_AHEAD):
+        soup = BeautifulSoup(browser.page_source, "lxml")
 
-    links = [a.get('href') for a in soup.find_all('a', href=True)]
+        links = [a.get('href') for a in soup.find_all('a', href=True)]
 
-    # finds all links on the page of interest
-    df = pd.DataFrame(links)
-    df.columns = ['Links']
-    eventlinks = df['Links'].loc[df['Links'].str.startswith(
-        '/events/', na=False)].to_list()
-    eventlinks.pop(0)
-    # filters out non event ones
-    if len(eventlinks) == 0:
-        print("noevents", fb_page)
+        # finds all links on the page of interest
+        df = pd.DataFrame(links)
+        df.columns = ['Links']
+        eventlinks = df['Links'].loc[df['Links'].str.contains(
+            'evid=', na=False)].to_list()
+        # filters out non event ones
 
-    mbasic_links = []
-    fb_links = []
+        for event in eventlinks:
+            link = 'https://nationsguiden.se' + event
+            if link in all_links:
+                print("notappended")
+            else:
+                link = [link, i]
+                all_links.append(link)
+        
+        next = browser.find_element(by=By.ID, value='datepicker-after-9018')
+        next.click()
 
-    for event in eventlinks:
-        if "/create/" not in event:
-            mbasic = 'http://mbasic.facebook.com' + event
-            fb = 'http://www.facebook.com' + event
+        time.sleep(5)
 
-            mbasic_links.append(mbasic)
-            fb_links.append(fb)
-
-    # creates the actual mbasic link and actual normal fb link
-    return mbasic_links, fb_links
+    return all_links

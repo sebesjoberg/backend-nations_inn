@@ -7,4 +7,4 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
 
-        dbu.start()
+        dbu.Dbupdater()

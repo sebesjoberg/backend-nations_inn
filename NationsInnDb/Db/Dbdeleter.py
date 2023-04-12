@@ -1,15 +1,11 @@
 from django.db.models.functions import Now
 
 
-def Dbdeleter(ns, fc):
+def Dbdeleter(fail):
     from ..models import Event
-    print(ns, fc)
-    if(ns):
-        # delete all nationsguiden if something whre scraped
-        Event.objects.filter(link__icontains="nationsguiden").delete()
-
-    if(fc):
-        # delete all facebook if something whre scraped
-        Event.objects.filter(link__icontains="facebook").delete()
+    
+    if(not fail):
+        #delete all if correct scrape
+        Event.objects.delete()
     # end by removing thoose that have happened
     Event.objects.filter(endtime__lt=Now()).delete()

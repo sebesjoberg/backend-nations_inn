@@ -1,24 +1,23 @@
 import os
 from selenium import webdriver
-from .eventFinder2 import eventFinder as ef
-from .eventScraper2 import eventScraper as es
+from .eventFinder import eventFinder as ef
+from .eventScraper import eventScraper as es
 from .CONFIG import names, shortnames
+
+
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.options import Options
+
 
 
 def nationScraper():
     nations = names()
     shorts = shortnames()
     event_list = []
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-
-    chrome_options.binary_location = os.environ.get('GOOGLE_CHROME_BIN')
-
-    browser = webdriver.Chrome(executable_path=os.environ.get('CHROMEDRIVER_PATH'),
-                               options=chrome_options)
-
+    options = Options()
+    options.headless = True
+    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=options)
     event_datas = ef(browser)
 
     for data in event_datas:
@@ -44,3 +43,5 @@ def nationScraper():
     browser.close()
 
     return event_list
+
+
