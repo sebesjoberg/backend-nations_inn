@@ -28,22 +28,27 @@ class EventList(viewsets.ReadOnlyModelViewSet):
         starttime = self.request.GET.get(
             'starttime', None)
 
-        if nation is not None:  # use Q object here to get for both nation and time
-            queryset = queryset.filter(nation=nation)
-        elif starttime is not None:
-            starttime = starttime[:10]
-            if starttime.find('/') != -1:
-                starttime = starttime.split('/')
-                if len(starttime[0]) != 4:
-                    starttime = '20'+starttime[2] + \
-                        '-'+starttime[0]+'-'+starttime[1]
-                else:
-                    starttime = starttime[2] + '-' + \
-                        starttime[0]+'-'+starttime[1]
-            criterion1 = Q(starttime__date=starttime)
+        if nation is not None: 
+            
+            nation = nation.split(',')
+            
+            queryset = queryset.filter(nation__in=nation)
+        if starttime is not None:
+            starttime = starttime.split(",")
+            for index in range(len(starttime)):
+                time = starttime[index][:10]
+                if time.find('/') != -1:
+                    time = time.split('/')
+                    if len(time[0]) != 4:
+                        time = '20'+time[2] + \
+                            '-'+time[0]+'-'+time[1]
+                    else:
+                        time = time[2] + '-' + \
+                            time[0]+'-'+time[1]
+                starttime[index] = time
+            
 
-            queryset = queryset.filter(
-                criterion1)
+            queryset = queryset.filter(starttime__date__in=starttime)
         queryset = queryset.order_by('starttime')
 
         return queryset
