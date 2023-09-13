@@ -11,7 +11,7 @@ def eventFinder(browser):
     
     all_links = [] 
     browser.get('https://nationsguiden.se')
-  
+    
     for i in range(DAYS_AHEAD):
         soup = BeautifulSoup(browser.page_source, "lxml")
 

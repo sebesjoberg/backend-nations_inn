@@ -5,9 +5,10 @@ from .eventScraper import eventScraper as es
 from .CONFIG import names, shortnames
 
 
-from selenium.webdriver.chrome.service import Service as ChromeService
-from webdriver_manager.chrome import ChromeDriverManager
-from selenium.webdriver.chrome.options import Options
+
+from selenium import webdriver
+from selenium.webdriver.edge.service import Service as EdgeService
+from webdriver_manager.microsoft import EdgeChromiumDriverManager
 
 
 
@@ -15,11 +16,13 @@ def nationScraper():
     nations = names()
     shorts = shortnames()
     event_list = []
-    options = Options()
-    options.headless = True
-    browser = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()),options=options)
+    #options = Options()
+    #options.headless = True
+    
+    browser = webdriver.Edge(service=EdgeService(EdgeChromiumDriverManager().install()))
+    
     event_datas = ef(browser)
-
+    
     for data in event_datas:
         try:
             [title, time, location, description] = es(data, browser)
