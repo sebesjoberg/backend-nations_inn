@@ -27,7 +27,10 @@ class EventList(viewsets.ReadOnlyModelViewSet):
         nation = self.request.GET.get('nation', None)
         starttime = self.request.GET.get(
             'starttime', None)
-
+        id = self.request.GET.get('id', None)
+        if id is not None:
+            queryset = queryset.filter(id=id)
+            return queryset
         if nation is not None: 
             
             nation = nation.split(',')
